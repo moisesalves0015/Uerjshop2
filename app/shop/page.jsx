@@ -44,11 +44,11 @@ const Shop = () => {
       <Navbar />
 
       {loggedInUserId === profileId && (
-        <h1 className="title-list">Your Works</h1>
+        <h1 className="title-list">Seus anúncios</h1>
       )}
 
       {loggedInUserId !== profileId && (
-        <h1 className="title-list">{profile.username}'s Works</h1>
+        <h1 className="title-list">{profile.username} anúncios</h1>
       )}
 
       <WorkList data={workList}/>
