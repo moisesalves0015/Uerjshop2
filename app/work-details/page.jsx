@@ -17,6 +17,7 @@ import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { SiWhatsapp } from "react-icons/si";
 import Link from 'next/link'
+import { Suspense } from 'react';
 
 
 const WorkDetails = () => {
@@ -146,105 +147,114 @@ const WorkDetails = () => {
 
   console.log(session?.user?.cart);
 
-  return loading ? (
-    <Loader />
-  ) : (
-    <>
-      <Navbar />
-      <div className="work-details">
-        <div className="title">
-          <h1>{work.title}</h1>
-          {work?.creator?._id === userId ? (
-            <div
-              className="save"
-              onClick={() => {
-                router.push(`/update-work?id=${workId}`);
-              }}
-            >
-              <Edit />
-              <p>Edit</p>
-            </div>
-          ) : (
-            <div className="save" onClick={patchWishlist}>
-              {isLiked ? (
-                <Favorite sx={{ color: "red" }} />
+  return (
+    <Suspense fallback={<Loader />}>
+      {loading ? (
+        <Loader />
+      ) : (
+        <>
+
+          <Navbar />
+          <div className="work-details">
+            <div className="title">
+              <h1>{work.title}</h1>
+              {work?.creator?._id === userId ? (
+                <div
+                  className="save"
+                  onClick={() => {
+                    router.push(`/update-work?id=${workId}`);
+                  }}
+                >
+                  <Edit />
+                  <p>Edit</p>
+                </div>
               ) : (
-                <FavoriteBorder />
+                <div className="save" onClick={patchWishlist}>
+                  {isLiked ? (
+                    <Favorite sx={{ color: "red" }} />
+                  ) : (
+                    <FavoriteBorder />
+                  )}
+                  <p>Favoritar</p>
+                </div>
               )}
-              <p>Favoritar</p>
             </div>
-          )}
-        </div>
 
-        <div className="slider-container">
-          <div
-            className="slider"
-            style={{ transform: `translateX(-${currentIndex * 100}%)` }}
-          >
-            {work.workPhotoPaths?.map((photo, index) => (
-              <div className="slide" key={index}>
-                <img src={photo} alt="work" />
-                <div className="prev-button" onClick={(e) => goToPrevSlide(e)}>
-                  <ArrowBackIosNew sx={{ fontSize: "15px" }} />
-                </div>
-                <div className="next-button" onClick={(e) => goToNextSlide(e)}>
-                  <ArrowForwardIos sx={{ fontSize: "15px" }} />
-                </div>
+            <div className="slider-container">
+              <div
+                className="slider"
+                style={{ transform: `translateX(-${currentIndex * 100}%)` }}
+              >
+                {work.workPhotoPaths?.map((photo, index) => (
+                  <div className="slide" key={index}>
+                    <img src={photo} alt="work" />
+                    <div className="prev-button" onClick={(e) => goToPrevSlide(e)}>
+                      <ArrowBackIosNew sx={{ fontSize: "15px" }} />
+                    </div>
+                    <div className="next-button" onClick={(e) => goToNextSlide(e)}>
+                      <ArrowForwardIos sx={{ fontSize: "15px" }} />
+                    </div>
+                  </div>
+                ))}
               </div>
-            ))}
-          </div>
-        </div>
-
-        <div className="photos">
-          {work.workPhotoPaths?.slice(0, visiblePhotos).map((photo, index) => (
-            <img
-              src={photo}
-              alt="work-demo"
-              key={index}
-              onClick={() => handleSelectedPhoto(index)}
-              className={selectedPhoto === index ? "selected" : ""}
-            />
-          ))}
-
-          {visiblePhotos < work.workPhotoPaths.length && (
-            <div className="show-more" onClick={loadMorePhotos}>
-              <ArrowForwardIos sx={{ fontSize: "40px" }} />
-              Ver mais
             </div>
-          )}
-        </div>
 
-        <hr />
+            <div className="photos">
+              {work.workPhotoPaths?.slice(0, visiblePhotos).map((photo, index) => (
+                <img
+                  src={photo}
+                  alt="work-demo"
+                  key={index}
+                  onClick={() => handleSelectedPhoto(index)}
+                  className={selectedPhoto === index ? "selected" : ""}
+                />
+              ))}
 
-        <div className="profile">
-          <img
-            src={work.creator.profileImagePath}
-            alt="profile"
-            onClick={() => router.push(`/shop?id=${work.creator._id}`)}
-          />
-          <h3>Criado por {work.creator.username}</h3>
-        </div>
+              {visiblePhotos < work.workPhotoPaths.length && (
+                <div className="show-more" onClick={loadMorePhotos}>
+                  <ArrowForwardIos sx={{ fontSize: "40px" }} />
+                  Ver mais
+                </div>
+              )}
+            </div>
 
-        <hr />
+            <hr />
 
-        <h3>Sobre o anúncio</h3>
-        <p>{work.description}</p>
+            <div className="profile">
+              <img
+                src={work.creator.profileImagePath}
+                alt="profile"
+                onClick={() => router.push(`/shop?id=${work.creator._id}`)}
+              />
+              <h3>Criado por {work.creator.username}</h3>
+            </div>
 
-        <h1>R$ {work.price}</h1>
-        <button style={{ display: "none" }} type="submit" onClick={addToCart}>
-          <ShoppingCart />
-          ADD TO CART
-        </button>
-        
-          <Link  class="whatsapp-button" href={whatsappURL} target="_blank" rel="noopener noreferrer" >
-            <SiWhatsapp />
-            ENVIAR MENSAGEM
-          </Link>
-       
+            <hr />
 
-      </div>
-    </>
+            <h3>Sobre o anúncio</h3>
+            <p>{work.description}</p>
+
+            <h1>R$ {work.price}</h1>
+            <button style={{ display: "none" }} type="submit" onClick={addToCart}>
+              <ShoppingCart />
+              ADD TO CART
+            </button>
+
+            <Link class="whatsapp-button" href={whatsappURL} target="_blank" rel="noopener noreferrer" >
+              <SiWhatsapp />
+              ENVIAR MENSAGEM
+            </Link>
+
+
+          </div>
+        </>
+      )}
+    </Suspense>
   );
 };
 
 export default WorkDetails;
+
+
+
+

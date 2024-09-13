@@ -1,13 +1,13 @@
 "use client";
 import Navbar from "@components/Navbar";
 import { useSearchParams } from "next/navigation";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, Suspense } from "react";
 import Loader from "@components/Loader";
 import Form from "@components/Form";
 import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
 
-const UpdateWork = () => {
+const UpdateWorkContent = () => {
   const { data: session } = useSession();
 
   const [loading, setLoading] = useState(true);
@@ -54,31 +54,31 @@ const UpdateWork = () => {
   const router = useRouter();
 
   const handleSubmit = async (e) => {
-    e.preventDefault()
+    e.preventDefault();
 
     try {
-      const updateFormWork = new FormData()
+      const updateFormWork = new FormData();
 
       for (var key in work) {
-        updateFormWork.append(key, work[key])
+        updateFormWork.append(key, work[key]);
       }
 
       work.photos.forEach((photo) => {
-        updateFormWork.append("workPhotoPaths", photo)
-      })
+        updateFormWork.append("workPhotoPaths", photo);
+      });
 
       const response = await fetch(`/api/work/${workId}`, {
         method: "PATCH",
-        body: updateFormWork
-      })
+        body: updateFormWork,
+      });
 
       if (response.ok) {
-        router.push(`/shop?id=${session?.user?._id}`)
+        router.push(`/shop?id=${session?.user?._id}`);
       }
     } catch (err) {
-      console.log("Publish Work failed", err.message)
+      console.log("Publish Work failed", err.message);
     }
-  }
+  };
 
   return loading ? (
     <Loader />
@@ -94,5 +94,11 @@ const UpdateWork = () => {
     </>
   );
 };
+
+const UpdateWork = () => (
+  <Suspense fallback={<Loader />}>
+    <UpdateWorkContent />
+  </Suspense>
+);
 
 export default UpdateWork;
